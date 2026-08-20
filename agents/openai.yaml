@@ -1,0 +1,5 @@
+interface:
+  display_name: "Safari Web Stress Test"
+  short_description: "Run bounded, observable UI stress loops in Safari"
+  default_prompt: "Run a bounded stress test on the current Safari web workflow."
+
