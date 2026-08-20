@@ -14,18 +14,18 @@ An iteration is a verified state transition, not merely a click: inspect the cur
 
 - Treat the requested iteration count as a maximum. Stop early if the page is complete, the test target disappears, a CAPTCHA/login/permission challenge appears, or the UI becomes unsafe to interpret.
 - Use this for exercising navigation, controls, form interactions, and response rendering. Do not infer permission to solve substantive educational questions, make financial purchases, send communications, or press a final submit/complete control.
-- Before clicking a final completion, submission, purchase, or similarly material action, stop and ask for explicit confirmation unless the user explicitly included that action in the stress-test scope.
+- Before clicking a final completion, submission, purchase, or similarly material action, stop and ask for explicit confirmation unless the user explicitly included that action in the stress-test scope. A user-authorized **full-flow test** explicitly includes the visible final completion/submission step, so perform it after the preceding flow has been verified.
 - Ask before CAPTCHA handling or other user-verification steps.
 
-Before starting, establish the test action, the workflow/page, the definition of one iteration (for example, feedback only versus feedback plus Continue), the maximum count, and the final stop point. Preserve the current logged-in session; do not replace it with a guessed URL or create a new account.
+Before starting, establish the test action, the workflow/page, the definition of one iteration (for example, feedback only versus feedback plus Continue), the maximum count, and the final stop point. For a full-flow test, define the forward path from the current screen through final submission, not a repeated interaction with the same controls. Preserve the current logged-in session; do not replace it with a guessed URL or create a new account.
 
 ## Operating loop
 
 1. **Inspect.** Use the `computer-use` skill and its Sky-based Safari controls. Read a fresh full state before every interaction: page mode, visible messages, progress, available controls, and focus. Never assume a fixed URL, element index, position, or question layout.
-2. **Decide.** Derive exactly one next logical action from the newest state and the user-authorized test path. Prefer semantic controls from the new state over coordinates or remembered indices.
+2. **Decide.** Derive exactly one next logical action from the newest state and the user-authorized test path. Prefer the action that advances the workflow to a new state over revisiting a prior choice or control. Do not alternate between two answer options, re-open the same panel, or repeat a feedback-only action unless the user explicitly defined that exact action as the test target.
 3. **Act.** Perform that one action. Keep compound interactions tightly scoped: choose a radio/checkbox/text value, then re-read state before submitting. Never batch actions across a page transition.
 4. **Verify.** Immediately obtain a new full state. Confirm the expected transition—value accepted, feedback shown, next page loaded, required control enabled, or other visible outcome. If it is not verified, do not increment the count.
-5. **Record and continue.** Track the requested maximum, verified iterations, visible success/failure result, progress changes, and any recovery. Continue is a separate page state: click it only when it is visibly present and the test definition includes advancing.
+5. **Record and continue.** Track the requested maximum, verified iterations, visible success/failure result, progress changes, and any recovery. Continue is a separate page state: click it only when it is visibly present and the test definition includes advancing. After feedback is verified, progress to the next state; do not return to the prior question merely to consume iterations.
 
 Send concise progress updates every few completed iterations and immediately after an error, recovery, required prerequisite, or stop condition.
 
@@ -55,9 +55,9 @@ Maintain: requested maximum, actual completed loops, verified successes, visible
 
 Stop without proceeding when:
 
-- the application presents its final completion/submission action;
+- the application presents its final completion/submission action and that action is outside the user-authorized scope;
 - a user-verification or CAPTCHA challenge appears;
 - repeated fresh-state checks cannot establish a safe next action; or
 - the requested maximum has been reached.
 
-Also stop when a recovery would discard user data, overwrite meaningful progress, or exceed the user's authorization. Do not click a final completion/submission control unless the user explicitly asks for that exact final action after seeing the completion state.
+Also stop when a recovery would discard user data, overwrite meaningful progress, or exceed the user's authorization. If the user authorized a full-flow test, click the visible final completion/submission control once the path to it has been verified, then inspect and record the confirmation state. Otherwise, do not click it unless the user explicitly asks for that exact final action after seeing the completion state.
